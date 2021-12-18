@@ -16,6 +16,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/etag"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/gofiber/helmet/v2"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -52,6 +53,7 @@ func main() {
 	app.Use(helmet.New())
 	app.Use(etag.New())
 	app.Use(cors.New())
+	app.Use(requestid.New())
 
 	// Group /v1 endpoint.
 	v1 := app.Group("/v1")
