@@ -49,6 +49,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	userCollection := mg.Db.Collection(config.Get("DB_COLLECTION"))
+
 	// Initialize a new Fiber app
 	app := fiber.New(fiber.Config{
 		Prefork: *prod,
@@ -65,7 +67,7 @@ func main() {
 	// Group /v1 endpoint.
 	v1 := app.Group("/v1")
 
-	v1.Get("/register", handlers.Register)
+	v1.Post("/register", handlers.Register(userCollection))
 	v1.Get("/login", handlers.Login)
 
 	// Handle other 404 routes
