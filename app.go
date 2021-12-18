@@ -2,6 +2,7 @@ package main
 
 import (
 	"auth/config"
+	"auth/entities"
 	"auth/handlers"
 
 	"context"
@@ -21,20 +22,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// A MongoInstace contains the Mongo client & database objects
-type MongoInstance struct {
-	Client *mongo.Client
-	Db     *mongo.Database
-}
-
-type User struct {
-	ID       string `json:"id,omitempty" bson:"_id,omitempty"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
 var (
-	mg       MongoInstance
+	mg       entities.MongoInstance
 	dbName   = config.Get("DB_NAME")
 	mongoURI = config.Get("MONGO_URI") + dbName
 	prod     = flag.Bool("prod", false, "Enable prefork in Production")
@@ -102,7 +91,7 @@ func Connect() error {
 		return clientError
 	}
 
-	mg = MongoInstance{
+	mg = entities.MongoInstance{
 		Client: client,
 		Db:     db,
 	}
