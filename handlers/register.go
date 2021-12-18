@@ -25,7 +25,7 @@ func Register(collection *mongo.Collection) fiber.Handler {
 		query := bson.D{{Key: "username", Value: body.Username}}
 		existingUser := collection.FindOne(c.Context(), query)
 
-		userFromDb := body
+		userFromDb := &entities.User{}
 		existingUser.Decode(userFromDb)
 
 		// If user with provided username already exists,
@@ -48,7 +48,7 @@ func Register(collection *mongo.Collection) fiber.Handler {
 			})
 		}
 
-		user := &entities.User{}
+		user := body
 		user.Password = hashedPassword
 
 		insertionResult, err := collection.InsertOne(c.Context(), user)
