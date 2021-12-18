@@ -1,1 +1,1 @@
-web: bin/auth
+web: bin/auth -prod
