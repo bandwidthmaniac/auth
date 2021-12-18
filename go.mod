@@ -1,4 +1,4 @@
-module github.com/jscrates/auth
+module auth
 
 go 1.17
 
