@@ -4,6 +4,7 @@ import (
 	"auth/config"
 	"auth/entities"
 	"auth/handlers"
+	"auth/middleware"
 
 	"context"
 	"flag"
@@ -59,7 +60,7 @@ func main() {
 	v1 := app.Group("/v1")
 
 	v1.Post("/register", handlers.Register(userCollection))
-	v1.Get("/login", handlers.Login)
+	v1.Get("/login", middleware.ValidateAuthPayload, handlers.Login(userCollection))
 
 	// Handle other 404 routes
 	app.Use(handlers.NotFound)
