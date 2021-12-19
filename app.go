@@ -60,7 +60,7 @@ func main() {
 	v1 := app.Group("/v1")
 
 	v1.Post("/register", handlers.Register(userCollection))
-	v1.Get("/login", middleware.ValidateAuthPayload, handlers.Login(userCollection))
+	v1.Put("/login", middleware.ValidateAuthPayload, handlers.Login(userCollection))
 
 	// Handle other 404 routes
 	app.Use(handlers.NotFound)

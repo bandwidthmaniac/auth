@@ -1,13 +1,18 @@
 package handlers
 
 import (
+	"auth/config"
 	"auth/entities"
 	"auth/lib"
 	"auth/utils"
 
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+
+	"github.com/golang-jwt/jwt"
 )
 
 const (
@@ -36,18 +41,37 @@ func Login(collection *mongo.Collection) fiber.Handler {
 		userFromDB := &entities.User{}
 		existingUser.Decode(userFromDB)
 
-		compareError := utils.ComparePassword([]byte(userFromDB.Password), []byte(password))
-
-		if compareError != nil {
+		if !utils.ComparePassword([]byte(userFromDB.Password), []byte(password)) {
 			return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
 				"status": fiber.StatusBadRequest,
 				"error":  lib.InvalidCredentials,
 			})
 		}
 
+		jwtSecret := config.Get("JWT_SECRET")
+		encodedToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"id":  userFromDB.ID,
+			"iat": time.Now(),
+		})
+
+		signedToken, errTokenSign := encodedToken.SignedString([]byte(jwtSecret))
+
+		if errTokenSign != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"status": fiber.StatusInternalServerError,
+				"error":  fiber.ErrInternalServerError,
+			})
+		}
+
+		// User data will be sent as response
+		userData := map[string]string{
+			"id":    userFromDB.ID.Hex(),
+			"token": signedToken,
+		}
+
 		return c.JSON(fiber.Map{
 			"status": fiber.StatusOK,
-			"data":   userFromDB,
+			"data":   userData,
 		})
 	}
 }
