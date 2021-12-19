@@ -21,12 +21,12 @@ func HashPassword(password []byte) (string, error) {
 // Compares provided `hashedPassword` & `password` for truthiness.
 //
 // https://stackoverflow.com/a/23259804/7469926
-func ComparePassword(hashedPassword []byte, password []byte) error {
+func ComparePassword(hashedPassword []byte, password []byte) bool {
 	compareError := bcrypt.CompareHashAndPassword(hashedPassword, password)
 
 	if compareError != nil {
-		return compareError
+		return false
 	}
 
-	return nil
+	return true
 }
